@@ -18,7 +18,7 @@ public class SP_ClusterManager : MonoBehaviour {
 	{
 		cluster = new Cluster();
 		startingIndex = index;
-		//cluster.clusterSize = Random.Range (0, maxSystems);
+		//cluster.clusterSize = Random.Range (0, maxSystems);		//Use this to randomise the number of systems in each cluster.
 		cluster.clusterSize = maxSystems;
 		cluster.systemNameList = PopulateNameList<Enums.SystemNames> ();
 

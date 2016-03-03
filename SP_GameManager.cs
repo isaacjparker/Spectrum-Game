@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class SP_GameManager : MonoBehaviour {
 
 	public SP_ClusterManager clusterScript;
-	//public SP_StarSystemManager starScript;
 	public SP_CameraManager cameraScript;
 
 	public Dropdown clusterDropDown;
@@ -22,22 +21,21 @@ public class SP_GameManager : MonoBehaviour {
 	private bool clusterActive = false;
 
 
+	/// <summary>
+	/// Gets the cluster and camera scripts attached to the GameManager object in the Unity Editor
+	/// Also sets up the camera from the CameraManager.
+	/// </summary>
 	void Awake ()
 	{
 		clusterScript = GetComponent<SP_ClusterManager> ();
-		//starScript = GetComponent<SP_StarSystemManager>();
 		cameraScript = GetComponent<SP_CameraManager>();
 
 		cameraScript.SetupCamera();
 
-		//clusterDropDown.ClearOptions ();
-
-
 	}
 
 	/// <summary>
-	/// Main Update loop. Call ParallaxEffect and RotatePlanetMasks
-	/// to update the planet shadows in realtime.
+	/// Main Update loop. Calls the OrbitPlanets() function.
 	/// </summary>
 	void Update()
 	{
@@ -52,7 +50,6 @@ public class SP_GameManager : MonoBehaviour {
 
 	public void NewCluster()
 	{
-		//starSystems [systemIndex] = starScript.BuildStarSystem (systemIndex, cluster.systemNameList);
 
 		cluster.Add (new Cluster ());
 
@@ -71,6 +68,9 @@ public class SP_GameManager : MonoBehaviour {
 	}
 
 
+	/// <summary>
+	/// Destroys the cluster selected in the cluster drop down list.
+	/// </summary>
 	public void DestroyCluster()
 	{
 		if (clusterDropDown.value != null) 
@@ -82,7 +82,9 @@ public class SP_GameManager : MonoBehaviour {
 
 	}
 
-
+	/// <summary>
+	/// Refreshs the cluster drop down list.
+	/// </summary>
 	void RefreshDropDown()
 	{
 		if (clusterDropDown.value > 0) {
@@ -102,6 +104,7 @@ public class SP_GameManager : MonoBehaviour {
 	/// Carries out the function of orbiting the planets around the sun (usually position 0,0,0).
 	/// The rotation speed array was filled in PositionOrbits function and can be negative or posiitve
 	/// depending on the desired direction of orbit.
+	/// Also checks to ensure GameObjects aren't null thereby throwing up an error when trying to orbit a planet that isn't there
 	/// </summary>
 	void OrbitPlanets()
 	{

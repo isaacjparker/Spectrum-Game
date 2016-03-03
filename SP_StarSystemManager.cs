@@ -25,7 +25,6 @@ public class SP_StarSystemManager : MonoBehaviour {
 
 	//Lists to store possible spawn posiitions for planets and markers.
 	private List <Vector3> gridPositions = new List<Vector3> ();	//use this to track all the possible positions for planets on the map. And keep track if object has been spawned in that position.
-	//private float[] radiusPositions;		//use this to track the different radii a planet can orbit around.
 	private List <Vector3> markerPositions = new List<Vector3> ();
 
 	//Stores how many grid positions there are on a map
@@ -75,7 +74,11 @@ public class SP_StarSystemManager : MonoBehaviour {
 
 
 
-
+	/// <summary>
+	/// Initialises the grid lists for planet and marker placements.
+	/// Also adds the available positions to those lists. Takes the map size and divides by the map scale
+	/// to give grid positions. Adds those to list.
+	/// </summary>
 	void InitialiseList()
 	{
 		gridPositions.Clear ();
@@ -102,12 +105,15 @@ public class SP_StarSystemManager : MonoBehaviour {
 	}
 
 
+	/// <summary>
+	/// Place the markers for debugging. Grid can be turned on from Unity editor
+	/// otheriwse, will only show corner markers (to demonstrate size of map).
+	/// </summary>
 	void MarkerSetup()
 	{
 
 		//Instaniate a central marker and a marker for each corner of the map.
 		//Instantiate (mapMarker, new Vector3 (0, 0, 0), Quaternion.identity);
-
 		for (int x = 0; x < 4; x++) 
 		{
 			Instantiate (mapMarker, markerPositions[x], Quaternion.identity);
@@ -144,16 +150,14 @@ public class SP_StarSystemManager : MonoBehaviour {
 	/// </summary>
 	void PlaceSun()
 	{
-		//Vector3 randomPosition = RandomPosition ();
-		//randomPosition.x = randomPosition.x - (systemSize/2);
-		//randomPosition.y = randomPosition.y - (systemSize/2);
-
 		starSystem.sunInstance = Instantiate (sunTile, new Vector3 (0, 0, 0), Quaternion.identity) as GameObject;
 	}
 
 
 	/// <summary>
-	/// Lays out the planet instances using the RandomPosition function.
+	/// Lays out the planet instances using the RandomPosition function. This is the initial layout
+	/// based on a grid system and is modified by PositionOrbits().
+	/// The tile Array is manually created using prefab planet tiles in Unity.
 	/// </summary>
 	/// <param name="tileArray">Tile array.</param>
 	/// <param name="minimum">Minimum.</param>
@@ -177,8 +181,6 @@ public class SP_StarSystemManager : MonoBehaviour {
 			randomPosition.y = randomPosition.y - (systemSize/2);
 			GameObject tileChoice = tileArray [Random.Range (0, tileArray.Length)];		//Get a random planet and assign it to tileChoice
 
-			//starSystem.planets [i].instance = new GameObject ();
-
 			//Instantiate that choice at the randomPosition defined and store it in an instanced object.
 			starSystem.planets[i].instance = Instantiate (tileChoice, randomPosition, Quaternion.identity) as GameObject;
 		}
@@ -188,16 +190,14 @@ public class SP_StarSystemManager : MonoBehaviour {
 	/// <summary>
 	/// Firstly, initialises the arrays for storing the different radii each planet will rotate around
 	/// and the speeds of each planet.
-	/// Then cycle through each planet (the number of which is defined by planetInstances.Length)
+	/// Then cycle through each planet (the number of which is defined by planets.Length)
 	/// and attach the next radius (in increments of 10) to each planet and a random speed as
 	/// created in RandomRotationSpeed function. Finally, position each planet on its radius. 
 	/// The arrays are then used each frame in the OrbitPlanets
-	/// function called from Update().
+	/// function called from Update() in the GameManager.
 	/// </summary>
 	void PositionOrbits()
 	{
-		//radiusPositions = new float[starSystem.planets.Length];
-		//rotationSpeed = new float[starSystem.planets.Length];
 
 		for (int x = 0; x < starSystem.planets.Length; x++) 
 		{
@@ -209,8 +209,6 @@ public class SP_StarSystemManager : MonoBehaviour {
 		{
 			starSystem.planets[j].radiusPosition = starSystem.planets[j].radius + (j * 10);
 			starSystem.planets[j].rotationSpeed = RandomRotationSpeed();
-			//Debug.Log ("Rad Pos: " + radiusPositions [j].ToString ());
-			//Debug.Log ("Rand Rot (" + j.ToString() + ") " + rotationSpeed[j].ToString ());
 		}
 
 		for (int i = 0; i < starSystem.planets.Length; i++) 
@@ -219,6 +217,10 @@ public class SP_StarSystemManager : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Randomises the rotation speed.
+	/// </summary>
+	/// <returns>A random rotation speed.</returns>
 	float RandomRotationSpeed()
 	{
 		float randRotation = (Random.Range (-initRotationSpeed, initRotationSpeed)) + 0.1f;
@@ -227,12 +229,12 @@ public class SP_StarSystemManager : MonoBehaviour {
 
 
 	/// <summary>
-	/// Simply finds all child objects attached to the planet instances
-	/// and adds them to an array for modification in RotatePLanetMasks.
+	/// Finds the transforms attached to the child object masks of each instance of a planet.
+	/// Assigns that Transform to the mask variable within the same Planet class.
+	/// This keeps each instance and it's mask in the same Planet clone.
 	/// </summary>
 	void SetupPlanetMasks()
 	{
-		//planetMaskArray = GameObject.FindGameObjectsWithTag("PlanetMask");
 
 		for (int i = 0; i < starSystem.planets.Length; i++) 
 		{
@@ -259,63 +261,6 @@ public class SP_StarSystemManager : MonoBehaviour {
 		}
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/*
-	void ChooseSystemName()
-	{
-		//starSystem.nameList = new Enums.SystemNames();
-		//starSystem.nameList = GetRandomEnum<Enums.SystemNames> ();
-		//starSystem.systemName = starSystem.nameList.ToString ();
-
-		//systemNameList = PopulateNameList<Enums.SystemNames> ();
-		starSystem.systemName = RandomString (systemNameList);
-	}
-
-
-
-	static T GetRandomEnum<T>()
-	{
-		System.Array tempArray = System.Enum.GetValues (typeof(T));
-		T tempValue = (T)tempArray.GetValue (Random.Range (0, tempArray.Length));
-		return tempValue;
-	}
-
-
-	string RandomString(List<string> stringList)
-	{
-		int randomIndex = Random.Range (0, stringList.Count);
-		string randomString = stringList [randomIndex];
-		stringList.RemoveAt (randomIndex);
-		return randomString;
-	}
-	*/
 
 
 }
