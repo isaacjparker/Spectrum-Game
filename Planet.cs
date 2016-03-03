@@ -4,7 +4,10 @@ using System.Collections.Generic;
 
 public class Planet {
 
-	public GameObject instance = new GameObject();
+	//instance holds the instantiated clone of a planet
+	//mask holds the shadow mask and finds it's prefab from within the children
+	//of instance through the SetupPlanetMasks function in SP_StarSystemManager
+	public GameObject instance;
 	public Transform mask;
 
 
